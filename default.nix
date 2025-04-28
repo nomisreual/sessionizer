@@ -5,21 +5,29 @@ in
     name = "sessionizer";
     runtimeInputs = with pkgs; [findutils fzf fd tmux];
     text = ''
-      selected=$(fd . -t d -d 1 ${PROJECTS} | fzf)
-      exists=$(tmux list-sessions | grep -c "$selected")
+      if [[ -v TMUX ]]; then
+        selected=$(fd . -t d -d 1 ${PROJECTS} | fzf --tmux)
+      else
+        selected=$(fd . -t d -d 1 ${PROJECTS} | fzf --height 40% --layout reverse --border)
+      fi
+
+      # full paths
+      clean_path=$(realpath "$selected")
+
+      selected_name=$(basename "$selected")
 
       if [[ -v TMUX ]]; then
-        if [ "$exists" -eq 1 ]; then
-          echo "Switching to existing session."
-          tmux switch-client -t "$selected"
+        if tmux has-session -t="$selected_name" 2>/dev/null; then
+          tmux switch-client -t "$selected_name"
+          clear
         else
-          echo "Creating new session and switching to it."
-          tmux new-session -A -s "$selected" -c "$selected" -d
-          tmux switch-client -t "$selected"
+          tmux new-session -A -s "$selected_name" -c "$clean_path" -d
+          tmux switch-client -t "$selected_name"
+          clear
         fi
       else
-        echo "Create and attach to new session."
-        tmux new-session -A -s "$selected" -c "$selected"
+        tmux new-session -A -s "$selected_name" -c "$clean_path"
+        clear
       fi
     '';
   }
