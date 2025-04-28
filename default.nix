@@ -14,7 +14,11 @@ in
       # full paths
       clean_path=$(realpath "$selected")
 
+      # select name for session
       selected_name=$(basename "$selected")
+
+      # sanitize session name
+      selected_name=''${selected_name//[^a-zA-Z0-9_.-]/_}
 
       if [[ -v TMUX ]]; then
         if tmux has-session -t="$selected_name" 2>/dev/null; then
