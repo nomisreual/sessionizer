@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake";
+  description = "Create and switch tmux sessions easily.";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
@@ -9,9 +9,20 @@
     self,
     nixpkgs,
   }: let
-    system = "x86_64-linux";
-    pkgs = import nixpkgs {inherit system;};
+    allSystems = [
+      "x86_64-linux"
+      "aarch64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
+    forAllSystems = f:
+      nixpkgs.lib.genAttrs allSystems (system:
+        f {
+          pkgs = import nixpkgs {inherit system;};
+        });
   in {
-    packages.x86_64-linux.default = pkgs.callPackage ./default.nix {};
+    packages = forAllSystems ({pkgs}: {
+      default = pkgs.callPackage ./default.nix {};
+    });
   };
 }
