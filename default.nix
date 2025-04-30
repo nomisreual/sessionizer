@@ -1,5 +1,8 @@
 {pkgs ? import <nixpkgs> {}}: let
-  PROJECTS = "/home/simon/Projects";
+  PROJECTS =
+    if pkgs.stdenv.isLinux
+    then "/home/simon/Projects"
+    else "/Users/simon/Projects";
 in
   pkgs.writeShellApplication {
     name = "sessionizer";
