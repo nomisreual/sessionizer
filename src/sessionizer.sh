@@ -1,3 +1,32 @@
+# Usage message shown when -h flag is used.
+usage() {
+  message=$(
+    cat <<EOF
+Remember to set PROJECT_ROOT.
+Otherwise, sessionizer falls back to HOME.
+EOF
+  )
+  echo "$message"
+}
+
+#TODO: allow overriding PROJECT_ROOT with a command flag.
+while getopts 'h' opt; do
+  case "$opt" in
+  h)
+    usage
+    exit 0
+    ;;
+  *)
+    usage >&2
+    exit 1
+    ;;
+  esac
+done
+
+# TODO: check whether PROJECTS is a directory.
+# Similarly, check whether HOME as fallback is a directory.
+# Exit 1 otherwise.
+
 # Check whether Project root is set. Fall back to HOME otherwise.
 if [[ -v PROJECT_ROOT ]]; then
   PROJECTS=$PROJECT_ROOT
