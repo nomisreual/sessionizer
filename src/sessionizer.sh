@@ -9,6 +9,25 @@ EOF
   echo "$message"
 }
 
+preview_helper() {
+  # fzf selected dir
+  local dir="$1"
+
+  # find readme file
+  local readme
+  readme=$(find "$dir" -maxdepth 1 -type f -iname 'README.*' | head -n1)
+
+  # if readme, bat it
+  if [[ -n "$readme" ]]; then
+    bat --style=plain --color=always "$readme"
+  else
+    echo "No readme :("
+  fi
+}
+
+# Make the helper available in sub-processes (sub-shell spawning fzf)
+export -f preview_helper
+
 #TODO: allow overriding PROJECT_ROOT with a command flag.
 while getopts 'h' opt; do
   case "$opt" in
@@ -36,9 +55,10 @@ fi
 
 # Display selection differently based on run within a tmux session or not.
 if [[ -v TMUX ]]; then
-  selected=$(fd . -t d -d 1 "$PROJECTS" | fzf --tmux)
+  # manually invoke bash with preview, to make sure exported helper works
+  selected=$(fd . -t d -d 1 "$PROJECTS" | fzf --tmux --preview 'bash -c "preview_helper {}"')
 else
-  selected=$(fd . -t d -d 1 "$PROJECTS" | fzf --height 40% --layout reverse --border)
+  selected=$(fd . -t d -d 1 "$PROJECTS" | fzf --height 40% --layout reverse --border --preview 'bash -c "preview_helper {}"')
 fi
 
 # Based on project selection create a sanitized name for tmux session.
