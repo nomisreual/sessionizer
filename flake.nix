@@ -25,12 +25,7 @@
       default = pkgs.callPackage ./default.nix {};
     });
     devShells = forAllSystems ({pkgs}: {
-      default = pkgs.mkShell {
-        inputsFrom = [(pkgs.callPackage ./default.nix {})];
-        packages = with pkgs; [
-          bats
-        ];
-      };
+      default = pkgs.callPackage ./shell.nix {};
     });
   };
 }
