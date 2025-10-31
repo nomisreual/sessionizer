@@ -1,4 +1,5 @@
-# TMUX Sessionizer
+TMUX Sessionizer
+================
 
 Simple script for spinning up new tmux sessions or attaching to existing ones.
 
