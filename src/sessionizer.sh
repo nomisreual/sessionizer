@@ -2,7 +2,7 @@
 usage() {
   message=$(
     cat <<EOF
-Remember to set PROJECT_ROOT.
+Remember to set PROJECT_ROOT (needs to be a directory).
 Otherwise, sessionizer falls back to HOME.
 EOF
   )
